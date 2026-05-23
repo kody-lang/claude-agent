@@ -3,6 +3,8 @@ import json
 import requests
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -105,4 +107,12 @@ if __name__ == "__main__":
         transport="streamable-http",
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
+        middleware=[
+            Middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+        ],
     )
