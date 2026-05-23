@@ -33,7 +33,10 @@ def _dt_request(company: str, method: str, endpoint: str, **kwargs) -> dict:
         "Content-Type": "application/json",
     }
     resp = requests.request(method, url, headers=headers, timeout=15, **kwargs)
-    resp.raise_for_status()
+    if not resp.ok:
+        raise ValueError(f"DispatchTrack {resp.status_code}: {resp.text[:500]}")
+    if not resp.text.strip():
+        raise ValueError(f"DispatchTrack returned empty response for {method} {url}")
     return resp.json()
 
 
