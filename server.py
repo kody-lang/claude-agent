@@ -6,25 +6,27 @@ from fastmcp import FastMCP
 
 load_dotenv()
 
+# Module-level config constants
+_BASE_URL = os.environ.get("DISPATCHTRACK_BASE_URL", "https://jjvanlines.dispatchtrack.com")
+_ACCOUNT_CODE = os.environ.get("DISPATCHTRACK_ACCOUNT_CODE", "a18")
+_API_KEYS = {
+    "jj": os.environ.get("DISPATCHTRACK_API_KEY_JJ", ""),
+    "townsend": os.environ.get("DISPATCHTRACK_API_KEY_TOWNSEND", ""),
+}
+
 mcp = FastMCP("DispatchTrack")
 
 def _dt_request(company: str, method: str, endpoint: str, **kwargs) -> dict:
-    base_url = os.environ.get("DISPATCHTRACK_BASE_URL", "https://jjvanlines.dispatchtrack.com")
-    account_code = os.environ.get("DISPATCHTRACK_ACCOUNT_CODE", "a18")
-    api_keys = {
-        "jj": os.environ.get("DISPATCHTRACK_API_KEY_JJ", ""),
-        "townsend": os.environ.get("DISPATCHTRACK_API_KEY_TOWNSEND", ""),
-    }
     key = company.lower().strip()
     if key in ("j&j", "j&j van lines", "jj van lines"):
         key = "jj"
     elif key in ("townsend delivery",):
         key = "townsend"
-    if key not in api_keys:
+    if key not in _API_KEYS:
         raise ValueError(f"Unknown company '{company}'. Use 'jj' or 'townsend'.")
-    url = f"{base_url}/{account_code}/{endpoint.lstrip('/')}"
+    url = f"{_BASE_URL}/{_ACCOUNT_CODE}/{endpoint.lstrip('/')}"
     headers = {
-        "Authorization": f"Bearer {api_keys[key]}",
+        "Authorization": f"Bearer {_API_KEYS[key]}",
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
